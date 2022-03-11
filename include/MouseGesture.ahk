@@ -54,27 +54,35 @@ endMouseGesture(pExitFlag) {
     gGestureSend := ""
 }
 
+checkLongMove(pMoveSymbol) {
+    Return RegExMatch(gGestureText, "^.*(" . pMoveSymbol . "){2}$")
+}
+
 checkTargetPos() {
-    If (gXPos > gTPosR) {
-        gGestureText .= "'R"
+    vMoveSymbolR := "'R"
+    vMoveSymbolL := "'L"
+    vMoveSymbolD := "'D"
+    vMoveSymbolU := "'U"
+    If ((!checkLongMove(vMoveSymbolR)) && (gXPos > gTPosR)) {
+        gGestureText .= vMoveSymbolR
         gTPosR := gXPos + (MGLENX * MGLENV)
         gTPosL := gXPos - MGLENX
         gTPosU := gYPos - MGLENY
         gTPosD := gYPos + MGLENY
-    } Else If (gXPos < gTPosL) { 
-        gGestureText .= "'L"
+    } Else If ((!checkLongMove(vMoveSymbolL)) && (gXPos < gTPosL)) { 
+        gGestureText .= vMoveSymbolL
         gTPosR := gXPos + MGLENX
         gTPosL := gXPos - (MGLENX * MGLENV)
         gTPosU := gYPos - MGLENY
         gTPosD := gYPos + MGLENY
-    } Else If (gYPos < gTPosU) {
-        gGestureText .= "'U"
+    } Else If ((!checkLongMove(vMoveSymbolU)) && (gYPos < gTPosU)) {
+        gGestureText .= vMoveSymbolU
         gTPosR := gXPos + MGLENX
         gTPosL := gXPos - MGLENX
         gTPosU := gYPos - (MGLENY * MGLENV)
         gTPosD := gYPos + MGLENY
-    } Else If (gYPos > gTPosD) {
-        gGestureText .= "'D"
+    } Else If ((!checkLongMove(vMoveSymbolD)) && (gYPos > gTPosD)) {
+        gGestureText .= vMoveSymbolD
         gTPosR := gXPos + MGLENX
         gTPosL := gXPos - MGLENX
         gTPosU := gYPos - MGLENY
