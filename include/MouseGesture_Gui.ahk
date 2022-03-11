@@ -9,6 +9,7 @@ initMouseGesture_Gui() {
     Gui, MG_SET:New
     Gui, MG_SET:Add, Button, gBAdd Section, Add
     Gui, MG_SET:Add, Button, gBUpdate yp+0 x+20, Update
+    Gui, MG_SET:Add, Button, gBCopy yp+0 x+20, Copy
     Gui, MG_SET:Add, Button, gBDelete yp+0 x+20, Delete
     Gui, MG_SET:Add, Button, gBPlofiles yp+0 x+40, Plofiles
     Gui, MG_SET:Add, Tab2, w600 h300 vTabs gTabChange AltSubmit xm+5 Section, Gesture|Move Plofile|Default Gesture
@@ -66,7 +67,7 @@ showGestureSet() {
 
     Gui, MG_SET:Default
     Gui, Submit, NoHide
-    Gui, ListView, gLv1
+    Gui, ListView, gLv%Tabs%
 
     Gui, MG_SET:Show, , %gAhkExe% Gesture Setting
     WinSet, AlwaysOnTop, On, %gAhkExe% Gesture Setting
@@ -127,6 +128,32 @@ BUpdate:
     GuiControl, MG_UPD:Text, gEditColUpd3, %vCol3%
     Gui, MG_UPD:Show, , Mouse Gesture Update
     WinSet, AlwaysOnTop, On, Mouse Gesture Update
+Return
+
+BCopy:
+    If (LV_GetNext() = 0) {
+        Return
+    }
+    LV_GetText(vCol1, LV_GetNext(), 1)
+    LV_GetText(vCol2, LV_GetNext(), 2)
+    LV_GetText(vCol3, LV_GetNext(), 3)
+    LV_Add(, "! " . vCol1, vCol2, vCol3)
+    LV_ModifyCol()
+    vValue := vCol2
+    If (vCol3<>"") {
+        vValue := vValue . "`::" . vCol3
+    }
+    If (Tabs == 1) {
+        vIniPath := MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini"
+        vSection := "HotKey"
+    } Else If (Tabs == 2) {
+        vIniPath := MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini"
+        vSection := "WinTitle"
+    } Else If (Tabs == 3) {
+        vIniPath := MG_PROFILE_FOLDER_PATH . "Default.ini"
+        vSection := "HotKey"
+    }
+    IniWrite, %vValue%, %vIniPath%, %vSection%, % "! " . vCol1
 Return
 
 BDelete:

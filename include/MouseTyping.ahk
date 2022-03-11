@@ -81,7 +81,30 @@ checkNoDesktop() {
 
         LButton::
             gfLButton := True
-            KeyWait LButton
+            KeyWait, LButton, T%LONG_PRESS_DELAY%
+            If (!ErrorLevel) & (A_PriorHotKey = "LButton") {
+                MouseGetPos, vMX, vMY
+                SysGet, MonCount, MonitorCount
+                Loop, %MonCount% {
+                    SysGet, Mon, Monitor, %A_Index%
+                    If ( (MonLeft < vMX) & (MonRight > vMX) & (MonBottom > vMY) & (MonTop < vMY) ) {
+                        vRMX := vMX - MonLeft
+                        vRMY := vMY - MonTop
+                        If (A_Index <> MonCount) {
+                            vNextMonNum := A_Index + 1
+                            SysGet, Mon, Monitor, %vNextMonNum%
+                            vTMX := MonLeft + vRMX
+                            vTMY := MonTop + vRMY
+                            MouseMove, %vTMX%, %vTMY%
+                        } Else {
+                            MouseMove, %vRMX%, %vRMY%
+                        }
+                        Break
+                    }
+                }
+            } Else {
+                KeyWait LButton
+            }
             gfLButton := False
         Return
 

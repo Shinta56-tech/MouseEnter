@@ -18,6 +18,7 @@ SetTitleMatchMode, 2
 SetMouseDelay -1
 SetKeyDelay, -1
 SetBatchLines, -1
+CoordMode, Mouse, Screen
 
 ;*****************************************************************************************************************************************
 ; Initialize
