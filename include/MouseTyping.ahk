@@ -12,7 +12,6 @@ iniMouseTyping:
     Global gfRContorl := False
     Global gfRShift := False
     Global gfSpace := False
-    Global gfRAlt := False
 
     Global gfShiftCS := False
     Global gfShiftSC := False
@@ -33,28 +32,15 @@ checkNoDesktop() {
 ; Hotkey
 ;*****************************************************************************************************************************************
 
-#If
+#If !checkNoDesktop()
 
 *RButton::
-    If (!checkNoDesktop()) {
-        gfRButton := True
-        KeyWait, RButton, T%LONG_PRESS_DELAY%
-        If (!ErrorLevel) & (A_PriorKey = "RButton") {
-            Send, {Blind}{RButton}
-        }
-    } Else {
-        Send, {Blind}{RButton Down}
-        KeyWait, RButton
-        Send, {Blind}{RButton Up}
+    gfRButton := True
+    KeyWait, RButton, T%LONG_PRESS_DELAY%
+    If (!ErrorLevel) & (A_PriorKey = "RButton") {
+        Send, {Blind}{RButton}
     }
 Return
-*RButton Up::
-    gfRButton := False
-Return
-
-#RButton::Send, ^#{Right}
-
-#If !checkNoDesktop()
 
 *RShift::
     If (!gfRShift) {
@@ -74,11 +60,6 @@ Return
 		    KeyWait, RShift
 		    Send, {LShift Up}
         }
-    }
-Return
-*RShift Up::
-    If (gfRShift) {
-        gfRShift := False
     }
 Return
 
@@ -106,13 +87,8 @@ Return
         }
     }
 Return
-*RControl Up::
-    If (gfRControl) {
-        gfRControl := False
-    }
-Return
 
-#If !checkNoDesktop() &&  !gfRButton && !gfLButton
+#If !checkNoDesktop() && !gfRButton && !gfLButton
 
 *Space::
     If (!gfSpace) {
@@ -123,25 +99,32 @@ Return
         }
     }
 Return
-*Space Up::
-    If (gfSpace) {
-        gfSpace := False
-    }
+
+CapsLock::BackSpace
+vkF0::BackSpace
+
+#If gfRButton
+
+*RButton Up::
+    gfRButton := False
 Return
 
-*RAlt::
-    If (!gfRAlt) {
-        gfRAlt := True
-        KeyWait, RAlt, T%LONG_PRESS_DELAY%
-        If (!ErrorLevel) & (A_PriorKey="RAlt") {
-            Send, {Blind}{Backspace}
-        }
-    }
+#If gfRShift
+
+*RShift Up::
+    gfRShift := False
 Return
-*RAlt Up::
-    If (gfRAlt) {
-        gfRAlt := False
-    }
+
+#If gfRControl
+
+*RControl Up::
+    gfRControl := False
+Return
+
+#If gfSpace
+
+*Space Up::
+    gfSpace := False
 Return
 
 #If GetKeyState("RButton", "P")
@@ -177,7 +160,7 @@ Return
 *MButton::Send, !{F4}
 *Tab::WinSet, AlwaysOnTop, Toggle, A
 
-#If gfRButton && !gfLButton
+#If gfRButton && !gfLButton && !gfSpace
 
 q::Return
 w::u
@@ -196,9 +179,11 @@ v::j
 b::Return
 
 Space::Enter
-RAlt::Delete
+CapsLock::Delete
+vkF0::Delete
+Tab::BackSpace
 
-#If gfRButton && gfLButton
+#If gfRButton && gfLButton && !gfSpace
 
 q::Return
 w::vkBD ; \|
@@ -217,45 +202,29 @@ v::vkC0 ; @`
 b::vkE2 ; \_
 
 Space::Escape
-RAlt::Tab
+CapsLock::Tab
+vkF0::Tab
+Tab::Delete
 
-#If !gfRButton && gfLButton
+#If !gfRButton && gfLButton && !gfSpace
 
-q::F12
-w::F7
-e::F8
-r::F9
+q::Return
+w::Home
+e::Up
+r::End
 t::Return
-a::F11
-s::F4
-d::F5
-f::F6
-g::F11
-z::Return
-x::F1
-c::F2
-v::F3
-b::F10
-
-#If gfRAlt
-
-q::Home
-w::Up
-e::End
-r::Return
-t::Return
-a::Left
-s::Down
-d::Right
-f::Return
+a::Return
+s::Left
+d::Down
+f::Right
 g::Return
-z::PgUp
-x::Return
-c::PgDn
-v::Return
+z::Return
+x::PgUp
+c::Return
+v::PgDn
 b::Return
 
-#If gfSpace && !GetKeyState("a", "P")
+#If !gfRButton && !gfLButton && gfSpace
 
 q::Return
 w::7
@@ -273,20 +242,20 @@ c::2
 v::3
 b::Return
 
-#If gfSpace && GetKeyState("a", "P")
+#If gfRButton && !gfLButton && gfSpace
 
-q::Return
-w::Return
-e::Send, ^{PgUp}
-r::Return
+q::F12
+w::F7
+e::F8
+r::F9
 t::Return
-a::Return
-s::Send, ^#{Left}
-d::Send, ^{PgDn}
-f::Send, ^#{Right}
+a::F11
+s::F4
+d::F5
+f::F6
 g::Return
-z::Return
-x::Return
-c::Return
-v::Return
+z::F10
+x::F1
+c::F2
+v::F3
 b::Return

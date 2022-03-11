@@ -91,24 +91,31 @@ getGesturNameSend() {
     } Else {
         vGestureText := gGestureText
     }
-    IniRead, vAhkExe, %MG_PROFILE_FOLDER_PATH%%gAhkExe%.ini, WinTitle, %gWinTitle%, NoWinTitle
-    If (vAhkExe <> "NoWinTitle") {
-        IniRead, vGNameSend, %MG_PROFILE_FOLDER_PATH%%vAhkExe%.ini, HotKey, %vGestureText%
-        If (vGNameSend <> "ERROR") {
-            setGestureNameSend(vGNameSend)
-            Return
-        }
-    } Else {
-        IniRead, vGNameSend, %MG_PROFILE_FOLDER_PATH%%gAhkExe%.ini, HotKey, %vGestureText%
-        If (vGNameSend <> "ERROR") {
-            setGestureNameSend(vGNameSend)
-            Return
-        } Else {
-            IniRead, vGNameSend, %MG_PROFILE_FOLDER_PATH%Default.ini, HotKey, %vGestureText%
+    If (gWinTitle<>"") {
+        IniRead, vAhkExe, %MG_PROFILE_FOLDER_PATH%%gAhkExe%.ini, WinTitle, %gWinTitle%, NoWinTitle
+        If (vAhkExe <> "NoWinTitle") {
+            IniRead, vGNameSend, %MG_PROFILE_FOLDER_PATH%%vAhkExe%.ini, HotKey, %vGestureText%
             If (vGNameSend <> "ERROR") {
                 setGestureNameSend(vGNameSend)
                 Return
+            } Else {
+                IniRead, vGNameSend, %MG_PROFILE_FOLDER_PATH%Default.ini, HotKey, %vGestureText%
+                If (vGNameSend <> "ERROR") {
+                    setGestureNameSend(vGNameSend)
+                    Return
+                }
             }
+        }
+    }
+    IniRead, vGNameSend, %MG_PROFILE_FOLDER_PATH%%gAhkExe%.ini, HotKey, %vGestureText%
+    If (vGNameSend <> "ERROR") {
+        setGestureNameSend(vGNameSend)
+        Return
+    } Else {
+        IniRead, vGNameSend, %MG_PROFILE_FOLDER_PATH%Default.ini, HotKey, %vGestureText%
+        If (vGNameSend <> "ERROR") {
+            setGestureNameSend(vGNameSend)
+            Return
         }
     }
     gGestureName := ""

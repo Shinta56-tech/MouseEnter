@@ -3,26 +3,33 @@
 ;*****************************************************************************************************************************************
 
 initRunApp() {
+    Gosub, initRunApp
+    initPassLib()
 }
+
+initRunApp:
+    Global INI_RUNAPP := "ini/RunApp.ini"
+Return
 
 ;*****************************************************************************************************************************************
 ; Function
 ;*****************************************************************************************************************************************
 
-runOrSetAppkey(pButtonName) {
-    vIni := "ini/RunApp.ini"
-    vLongPressTime := LONG_PRESS_DELAY * 5
-    KeyWait, %pButtonName%, T%vLongPressTime%
-    If (ErrorLevel) {
-        WinGet, PID, PID, A
-        FullEXEPath := getModuleFileNameEx( PID )
-        IniWrite, %FullEXEPath%, %vIni%, RUNAPP, %pButtonName%
-        KeyWait, %pButtonName%
+setApp(pB) {
+    WinGet, PID, PID, A
+    FullEXEPath := getModuleFileNameEx( PID )
+    IniWrite, %FullEXEPath%, %INI_RUNAPP%, RUNAPP, %pB%
+    gfShiftSC := False
+    MsgBox, % "Set App !`nKey:" . pB . "`nPath:" . FullEXEPath
+}
+
+runApp(pB) {
+    IniRead, AppPath, %INI_RUNAPP%, RUNAPP, %pB%
+    If (AppPath <> "ERROR" ) {
+        Run, open %AppPath%
     } Else {
-        IniRead, AppPath, %vIni%, RUNAPP, %pButtonName%
-        If (AppPath <> "ERROR" ) {
-        	Run, open %AppPath%
-        }
+        gfShiftSC := False
+        MsgBox, No App
     }
 }
 
@@ -44,28 +51,46 @@ getModuleFileNameEx(p_pid) {
 
 #If gfShiftSC
 
-1::runOrSetAppkey("1")
-2::runOrSetAppkey("2")
-3::runOrSetAppkey("3")
-4::runOrSetAppkey("4")
-5::runOrSetAppkey("5")
+q::runApp("Q")
+w::runApp("W")
+e::runApp("E")
+r::runApp("R")
+t::runApp("T")
+a::runApp("A")
+s::runApp("S")
+d::runApp("D")
+f::runApp("F")
+g::runApp("G")
+z::runApp("Z")
+x::runApp("X")
+c::runApp("C")
+v::runApp("V")
+b::runApp("B")
 
-q::runOrSetAppkey("Q")
-w::runOrSetAppkey("W")
-e::runOrSetAppkey("E")
-r::runOrSetAppkey("R")
-t::runOrSetAppkey("T")
-a::runOrSetAppkey("A")
-s::runOrSetAppkey("S")
-d::runOrSetAppkey("D")
-f::runOrSetAppkey("F")
-g::runOrSetAppkey("G")
-z::runOrSetAppkey("Z")
-x::runOrSetAppkey("X")
-c::runOrSetAppkey("C")
-v::runOrSetAppkey("V")
-b::runOrSetAppkey("B")
+<+q::setApp("Q")
+<+w::setApp("W")
+<+e::setApp("E")
+<+r::setApp("R")
+<+t::setApp("T")
+<+a::setApp("A")
+<+s::setApp("S")
+<+d::setApp("D")
+<+f::setApp("F")
+<+g::setApp("G")
+<+z::setApp("Z")
+<+x::setApp("X")
+<+c::setApp("C")
+<+v::setApp("V")
+<+b::setApp("B")
+
+1::runPassLib()
+2::Return
+3::Return
+4::Return
+5::Return
 
 ;*****************************************************************************************************************************************
 ; Include
 ;*****************************************************************************************************************************************
+
+#Include, include\RunApp_PassLib.ahk

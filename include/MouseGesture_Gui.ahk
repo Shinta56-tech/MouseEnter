@@ -22,20 +22,29 @@ initMouseGesture_Gui() {
     Gui, MG_SET:ListView, Lv1
     Gui, MG_SET:Submit, NoHide
 
-    Gui, MG_REG:New
-    Gui, MG_REG:Add, Text, Section, Col1
-    Gui, MG_REG:Add, Edit, xs+50 yp+0 w300 vgEditCol1
-    Gui, MG_REG:Add, Text, xs+0 y+10, Col2
-    Gui, MG_REG:Add, Edit, xs+50 yp+0 w300 vgEditCol2
-    Gui, MG_REG:Add, Text, xs+0 y+10, Col3
-    Gui, MG_REG:Add, Edit, xs+50 yp+0 w300 vgEditCol3
-    Gui, MG_REG:Add, Button, w200 gBOkAdd xm+80 y+10 Section, Add
-    Gui, MG_REG:Add, Button, w200 gBOkUpd xs+0 ys+0, Update
+    Gui, MG_ADD:New
+    Gui, MG_ADD:Add, Text, Section, Col1
+    Gui, MG_ADD:Add, Edit, xs+50 yp+0 w300 vgEditColAdd1
+    Gui, MG_ADD:Add, Text, xs+0 y+10, Col2
+    Gui, MG_ADD:Add, Edit, xs+50 yp+0 w300 vgEditColAdd2
+    Gui, MG_ADD:Add, Text, xs+0 y+10, Col3
+    Gui, MG_ADD:Add, Edit, xs+50 yp+0 w300 vgEditColAdd3
+    Gui, MG_ADD:Add, Button, w200 vgOkAdd gBOkAdd xm+80 y+10, Add
+
+    Gui, MG_UPD:New
+    Gui, MG_UPD:Add, Text, Section, Col1
+    Gui, MG_UPD:Add, Edit, xs+50 yp+0 w300 vgEditColUpd1
+    Gui, MG_UPD:Add, Text, xs+0 y+10, Col2
+    Gui, MG_UPD:Add, Edit, xs+50 yp+0 w300 vgEditColUpd2
+    Gui, MG_UPD:Add, Text, xs+0 y+10, Col3
+    Gui, MG_UPD:Add, Edit, xs+50 yp+0 w300 vgEditColUpd3
+    Gui, MG_UPD:Add, Button, w200 vgOkUpd gBOkUpd xm+80 y+10, Update
 }
 
 initMouseGesture_Gui:
     Global gLv1, gLv2, gLv3
-    Global gEditCol1, gEditCol2, gEditCol3, gOkAdd, gOkUpd
+    Global gEditColAdd1, gEditColAdd2, gEditColAdd3, gOkAdd
+    Global gEditColUpd1, gEditColUpd2, gEditColUpd3, gOkUpd
     Global gBefoEditCol1
 Return
 
@@ -47,43 +56,35 @@ showGestureSet() {
     Gui, MG_SET:Default
 
     Gui, MG_SET:ListView, gLv1
+    initListView(MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini", "HotKey")
+
+    Gui, MG_SET:ListView, gLv2
+    initListView(MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini", "WinTitle")
+
+    Gui, MG_SET:ListView, gLv3
+    initListView(MG_PROFILE_FOLDER_PATH . "Default.ini", "HotKey")
+
+    Gui, MG_SET:Default
+    Gui, Submit, NoHide
+    Gui, ListView, gLv1
+
+    Gui, MG_SET:Show, , %gAhkExe% Gesture Setting
+    WinSet, AlwaysOnTop, On, %gAhkExe% Gesture Setting
+}
+
+initListView(pIniPath, pSection) {
     LV_Delete()
-    IniRead, iHotKeys, %MG_PROFILE_FOLDER_PATH%%gAhkExe%.ini, HotKey
+    IniRead, iHotKeys, %pIniPath%, %pSection%
     Loop, Parse, iHotKeys, `n
     {
 
         If (RegExMatch(A_LoopField, "^(.*)=(.*)`::(.*)$", found)) {
             LV_Add(, found1, found2, found3)
-        }
-    }
-    LV_ModifyCol()
-
-    Gui, MG_SET:ListView, gLv2
-    LV_Delete()
-    IniRead, iHotKeys, %MG_PROFILE_FOLDER_PATH%%gAhkExe%.ini, WinTitle
-    Loop, Parse, iHotKeys, `n
-    {
-
-        If (RegExMatch(A_LoopField, "^(.*)=(.*)$", found)) {
+        } Else If (RegExMatch(A_LoopField, "^(.*)=(.*)$", found)) {
             LV_Add(, found1, found2)
         }
     }
     LV_ModifyCol()
-
-    Gui, MG_SET:ListView, gLv3
-    LV_Delete()
-    IniRead, iHotKeys, %MG_PROFILE_FOLDER_PATH%Default.ini, HotKey
-    Loop, Parse, iHotKeys, `n
-    {
-
-        If (RegExMatch(A_LoopField, "^(.*)=(.*)`::(.*)$", found)) {
-            LV_Add(, found1, found2, found3)
-        }
-    }
-    LV_ModifyCol()
-
-    Gui, MG_SET:Show, , %gAhkExe% Gesture Setting
-    WinSet, AlwaysOnTop, On, %gAhkExe% Gesture Setting
 }
 
 ;*****************************************************************************************************************************************
@@ -91,6 +92,7 @@ showGestureSet() {
 ;*****************************************************************************************************************************************
 
 TabChange:
+    Gui, MG_SET:Default
     Gui, Submit, NoHide
     Gui, ListView, gLv%Tabs%
 Return
@@ -101,42 +103,30 @@ Return
 
 BAdd:
     If (Tabs == 2) {
-        GuiControl, MG_REG:Text, gEditCol1, %gWinTitle%
+        GuiControl, MG_ADD:Text, gEditColAdd1, %gWinTitle%
     } Else {
-        GuiControl, MG_REG:Text, gEditCol1, %gGestureText%
+        GuiControl, MG_ADD:Text, gEditColAdd1, %gGestureText%
     }
-    GuiControl, MG_REG:Text, gEditCol2,
-    GuiControl, MG_REG:Text, gEditCol3,
-    GuiControl, MG_REG:Show, gBOkAdd
-    GuiControl, MG_REG:Hide, gBOkUpd
-    Gui, MG_REG:Show, , Mouse Gesture Rigister
+    GuiControl, MG_ADD:Text, gEditColAdd2,
+    GuiControl, MG_ADD:Text, gEditColAdd3,
+    Gui, MG_ADD:Show, , Mouse Gesture Rigister
     WinSet, AlwaysOnTop, On, Mouse Gesture Rigister
 Return
 
 BUpdate:
-    Gui, MG_SET:Default
-    Gui, MG_SET:ListView, gLv%Tabs%
     If (LV_GetNext() = 0) {
         Return
     }
     LV_GetText(vCol1, LV_GetNext(), 1)
     LV_GetText(vCol2, LV_GetNext(), 2)
     LV_GetText(vCol3, LV_GetNext(), 3)
-    Gui, MG_REG:Default
     gBefoEditCol1 := vCol1
-    If (Tabs == 2) {
-        GuiControl, MG_REG:Text, gEditCol1, %vCol1%
-        GuiControl, MG_REG:Text, gEditCol2, %vCol2%
-        GuiControl, MG_REG:Text, gEditCol3, 
-    } Else {
-        GuiControl, MG_REG:Text, gEditCol1, %vCol1%
-        GuiControl, MG_REG:Text, gEditCol2, %vCol2%
-        GuiControl, MG_REG:Text, gEditCol3, %vCol3%
-    }
-    GuiControl, MG_REG:Hide, gBOkAdd
-    GuiControl, MG_REG:Show, gBOkUpd
-    Gui, MG_REG:Show, , Mouse Gesture Rigister
-    WinSet, AlwaysOnTop, On, Mouse Gesture Rigister
+    Gui, MG_UPD:Default
+    GuiControl, MG_UPD:Text, gEditColUpd1, %vCol1%
+    GuiControl, MG_UPD:Text, gEditColUpd2, %vCol2%
+    GuiControl, MG_UPD:Text, gEditColUpd3, %vCol3%
+    Gui, MG_UPD:Show, , Mouse Gesture Update
+    WinSet, AlwaysOnTop, On, Mouse Gesture Update
 Return
 
 BDelete:
@@ -160,61 +150,51 @@ BDelete:
 Return
 
 BOkAdd:
-    Gui, MG_REG:Submit, NoHide
-    Gui, MG_REG:Hide
+    Gui, MG_ADD:Submit, NoHide
+    Gui, MG_ADD:Hide
     If (Tabs == 1) {
-        vInput := gEditCol2 . "`::" . gEditCol3
-        vRegex := "^(.+)=(.+)`::(.+)$"
-        vCateg := "HotKey"
-        vInifile := gAhkExe . ".ini"
+        vIniPath := MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini"
+        vSection := "HotKey"
     } Else If (Tabs == 2) {
-        vInput := gEditCol2
-        vRegex := "^(.+)=(.+)$"
-        vCateg := "WinTitle"
-        vInifile := gAhkExe . ".ini"
+        vIniPath := MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini"
+        vSection := "WinTitle"
     } Else If (Tabs == 3) {
-        vInput := gEditCol2 . "`::" . gEditCol3
-        vRegex := "^(.+)=(.+)`::(.+)$"
-        vCateg := "HotKey"
-        vInifile := "Default.ini"
+        vIniPath := MG_PROFILE_FOLDER_PATH . "Default.ini"
+        vSection := "HotKey"
     }
-    vValue := gEditCol1 . "=" . vInput
-    If (RegExMatch(vValue, vRegex)) {
-        Gui, MG_SET:Default
-        Gui, MG_SET:ListView, gLv%Tabs%
-        LV_Add(, gEditCol1, gEditCol2, gEditCol3)
-        LV_ModifyCol()
-        IniWrite, %vInput%, %MG_PROFILE_FOLDER_PATH%%vInifile%, %vCateg%, %gEditCol1%
+    Gui, MG_SET:Default
+    Gui, MG_SET:ListView, gLv%Tabs%
+    LV_Add(, gEditColAdd1, gEditColAdd2, gEditColAdd3)
+    LV_ModifyCol()
+    vValue := gEditColAdd2
+    If (gEditColAdd3<>"") {
+        vValue := vValue . "`::" . gEditColAdd3
     }
+    IniWrite, %vValue%, %vIniPath%, %vSection%, %gEditColAdd1%
 Return
 
 BOkUpd:
-    Gui, MG_REG:Submit, NoHide
-    Gui, MG_REG:Hide
+    Gui, MG_UPD:Submit, NoHide
+    Gui, MG_UPD:Hide
     If (Tabs == 1) {
-        vInput := gEditCol2 . "`::" . gEditCol3
-        vRegex := "^(.+)=(.+)`::(.+)$"
-        vCateg := "HotKey"
-        vInifile := gAhkExe . ".ini"
+        vIniPath := MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini"
+        vSection := "HotKey"
     } Else If (Tabs == 2) {
-        vInput := gEditCol2
-        vRegex := "^(.+)=(.+)$"
-        vCateg := "WinTitle"
-        vInifile := gAhkExe . ".ini"
+        vIniPath := MG_PROFILE_FOLDER_PATH . gAhkExe . ".ini"
+        vSection := "WinTitle"
     } Else If (Tabs == 3) {
-        vInput := gEditCol2 . "`::" . gEditCol3
-        vRegex := "^(.+)=(.+)`::(.+)$"
-        vCateg := "HotKey"
-        vInifile := "Default.ini"
+        vIniPath := MG_PROFILE_FOLDER_PATH . "Default.ini"
+        vSection := "HotKey"
     }
-    vValue := gEditCol1 . "=" . vInput
-    If (RegExMatch(vValue, vRegex)) {
-        Gui, MG_SET:Default
-        Gui, MG_SET:ListView, gLv%Tabs%
-        vRowNum := LV_GetNext()
-        LV_Modify(vRowNum, , gEditCol1, gEditCol2, gEditCol3)
-        LV_ModifyCol()
-        IniDelete, %MG_PROFILE_FOLDER_PATH%%vInifile%, %vCateg%, %gBefoEditCol1%
-        IniWrite, %vInput%, %MG_PROFILE_FOLDER_PATH%%vInifile%, %vCateg%, %gEditCol1%
+    Gui, MG_SET:Default
+    Gui, MG_SET:ListView, gLv%Tabs%
+    vRowNum := LV_GetNext()
+    LV_Modify(vRowNum, , gEditColUpd1, gEditColUpd2, gEditColUpd3)
+    LV_ModifyCol()
+    IniDelete, %vIniPath%, %vSection%, %gBefoEditCol1%
+    vValue := gEditColUpd2
+    If (gEditColUpd3<>"") {
+        vValue := vValue . "`::" . gEditColUpd3
     }
+    IniWrite, %vValue%, %vIniPath%, %vSection%, %gEditColUpd1%
 Return
