@@ -195,7 +195,10 @@ Tab Up::
     showGestureSet()
 Return
 
+RButton::addGestureCommund("Rb")
 CapsLock::addGestureCommund("Cap")
+vkF0::addGestureCommund("Cap")
+RAlt::addGestureCommund("Cap")
 Space::addGestureCommund("Spc")
 RShift::addGestureCommund("Rs")
 RControl::addGestureCommund("Rc")

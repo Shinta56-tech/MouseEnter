@@ -12,6 +12,7 @@ iniMouseTyping:
     Global gfRContorl := False
     Global gfRShift := False
     Global gfSpace := False
+    Global gfRAlt := False
 
     Global gfShiftCS := False
     Global gfShiftSC := False
@@ -56,7 +57,7 @@ checkNoDesktop() {
         RButton::Send, {Tab}
         LButton::Send, +{Tab}
     
-    #If  gfRButton && !gfLButton && !gfSpace
+    #If  gfRButton && !gfLButton
 
         q::Return
         w::u
@@ -77,6 +78,7 @@ checkNoDesktop() {
         Space::Enter
         CapsLock::Delete
         vkF0::Delete
+        RAlt::Delete
         Tab::BackSpace
 
         LButton::
@@ -114,7 +116,7 @@ checkNoDesktop() {
         WheelUp::WheelLeft
         WheelDown::WheelRight
 
-    #If  gfRButton &&  gfLButton && !gfSpace
+    #If  gfRButton &&  gfLButton
 
         q::Return
         w::vkBD ; \|
@@ -135,9 +137,10 @@ checkNoDesktop() {
         Space::Escape
         CapsLock::Tab
         vkF0::Tab
+        RAlt::Tab
         Tab::Delete
 
-    #If !gfRButton &&  gfLButton && !gfSpace
+    #If !gfRButton &&  gfLButton
 
         q::Return
         w::Home
@@ -155,7 +158,7 @@ checkNoDesktop() {
         v::PgDn
         b::Return
 
-    #If !gfRButton && !gfLButton &&  gfSpace
+    #If gfSpace
 
         q::Return
         w::7
@@ -173,22 +176,22 @@ checkNoDesktop() {
         v::3
         b::Return
 
-    #If  gfRButton && !gfLButton &&  gfSpace
+    #If gfRAlt
 
-        q::F12
-        w::F7
-        e::F8
-        r::F9
+        q::Home
+        w::Up
+        e::End
+        r::Return
         t::Return
-        a::F11
-        s::F4
-        d::F5
-        f::F6
+        a::Left
+        s::Down
+        d::Right
+        f::Return
         g::Return
-        z::F10
-        x::F1
-        c::F2
-        v::F3
+        z::PgUp
+        x::Return
+        c::PgDn
+        v::Return
         b::Return
     
 ;---
@@ -228,6 +231,10 @@ checkNoDesktop() {
     #If gfSpace
 
         *Space Up::gfSpace := False
+    
+    #If gfRAlt
+
+        *RAlt Up::gfRAlt := False
 
     #If !checkNoDesktop()
 
@@ -283,5 +290,15 @@ checkNoDesktop() {
             KeyWait, Space, T%LONG_PRESS_DELAY%
             If (!ErrorLevel) & (A_PriorKey="Space") {
                 Send, {Blind}{Space}
+            }
+        Return
+
+    #If !checkNoDesktop() && !gfRAlt
+
+        *RAlt::
+            gfRAlt := True
+            KeyWait, RAlt, T%LONG_PRESS_DELAY%
+            If (!ErrorLevel) & (A_PriorKey="RAlt") {
+                Send, {Blind}{Backspace}
             }
         Return
