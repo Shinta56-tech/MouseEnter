@@ -88,17 +88,20 @@ checkNoDesktop() {
                 Loop, %MonCount% {
                     SysGet, Mon, Monitor, %A_Index%
                     If ( (MonLeft < vMX) & (MonRight > vMX) & (MonBottom > vMY) & (MonTop < vMY) ) {
+                        ; Check Log
+                        ;Msgbox Left--%MonLeft%, Right--%MonRight%, Bottom--%MonBottom%, Top--%MonTop%, X%vMX% Y%vMY%
+                        ;Msgbox %A_Index%, %MonCount%
                         vRMX := vMX - MonLeft
                         vRMY := vMY - MonTop
                         If (A_Index <> MonCount) {
                             vNextMonNum := A_Index + 1
-                            SysGet, Mon, Monitor, %vNextMonNum%
-                            vTMX := MonLeft + vRMX
-                            vTMY := MonTop + vRMY
-                            MouseMove, %vTMX%, %vTMY%
                         } Else {
-                            MouseMove, %vRMX%, %vRMY%
+                            vNextMonNum := 1
                         }
+                        SysGet, Mon, Monitor, %vNextMonNum%
+                        vTMX := MonLeft + vRMX
+                        vTMY := MonTop + vRMY
+                        MouseMove, %vTMX%, %vTMY%
                         Break
                     }
                 }
