@@ -45,8 +45,8 @@ checkNoDesktop() {
 
     #If gfShiftSC
 
-        RButton::XButton2
-        LButton::XButton1
+        *RButton::XButton2
+        *LButton::XButton1
         WheelUp::PgUp
         WheelDown::PgDn
         MButton::Send, !{F4}
@@ -54,8 +54,8 @@ checkNoDesktop() {
 
     #If gfShiftCS
 
-        RButton::Send, {Tab}
-        LButton::Send, +{Tab}
+        *RButton::Send, {Tab}
+        *LButton::Send, +{Tab}
     
     #If  gfRButton && !gfLButton
 
