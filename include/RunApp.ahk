@@ -24,6 +24,7 @@ setApp(pB) {
 }
 
 runApp(pB) {
+    fShiftSC := False
     IniRead, AppPath, %INI_RUNAPP%, RUNAPP, %pB%
     If (AppPath <> "ERROR" ) {
         Run, open %AppPath%
