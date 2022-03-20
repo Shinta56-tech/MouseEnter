@@ -65,9 +65,7 @@ showGestureSet() {
     Gui, MG_SET:ListView, gLv3
     initListView(MG_PROFILE_FOLDER_PATH . "Default.ini", "HotKey")
 
-    Gui, MG_SET:Default
-    Gui, Submit, NoHide
-    Gui, ListView, gLv%Tabs%
+    Gosub, TabChange
 
     Gui, MG_SET:Show, , %gAhkExe% Gesture Setting
     WinSet, AlwaysOnTop, On, %gAhkExe% Gesture Setting
@@ -94,8 +92,8 @@ initListView(pIniPath, pSection) {
 
 TabChange:
     Gui, MG_SET:Default
-    Gui, Submit, NoHide
-    Gui, ListView, gLv%Tabs%
+    Gui, MG_SET:Submit, NoHide
+    Gui, MG_SET:ListView, gLv%Tabs%
 Return
 
 BPlofiles:

@@ -19,17 +19,14 @@ setApp(pB) {
     WinGet, PID, PID, A
     FullEXEPath := getModuleFileNameEx( PID )
     IniWrite, %FullEXEPath%, %INI_RUNAPP%, RUNAPP, %pB%
-    gfShiftSC := False
     MsgBox, % "Set App !`nKey:" . pB . "`nPath:" . FullEXEPath
 }
 
 runApp(pB) {
-    fShiftSC := False
     IniRead, AppPath, %INI_RUNAPP%, RUNAPP, %pB%
     If (AppPath <> "ERROR" ) {
         Run, open %AppPath%
     } Else {
-        gfShiftSC := False
         MsgBox, No App
     }
 }
@@ -50,7 +47,7 @@ getModuleFileNameEx(p_pid) {
 ; Hotkey
 ;*****************************************************************************************************************************************
 
-#If gfShiftSC
+#If !checkNoDesktop() && GetKeyState("RControl", "P") && GetKeyState("RShift", "P") && !GetKeyState("RButton", "P")
 
 q::runApp("Q")
 w::runApp("W")
@@ -68,21 +65,31 @@ c::runApp("C")
 v::runApp("V")
 b::runApp("B")
 
-<+q::setApp("Q")
-<+w::setApp("W")
-<+e::setApp("E")
-<+r::setApp("R")
-<+t::setApp("T")
-<+a::setApp("A")
-<+s::setApp("S")
-<+d::setApp("D")
-<+f::setApp("F")
-<+g::setApp("G")
-<+z::setApp("Z")
-<+x::setApp("X")
-<+c::setApp("C")
-<+v::setApp("V")
-<+b::setApp("B")
+1::runPassLib()
+2::Return
+3::Return
+4::Return
+5::Return
+
+#If !checkNoDesktop() && GetKeyState("RControl", "P") && GetKeyState("RShift", "P") && GetKeyState("RButton", "P")
+
+q::setApp("Q")
+w::setApp("W")
+e::setApp("E")
+r::setApp("R")
+t::setApp("T")
+a::setApp("A")
+s::setApp("S")
+d::setApp("D")
+f::setApp("F")
+g::setApp("G")
+z::setApp("Z")
+x::setApp("X")
+c::setApp("C")
+v::setApp("V")
+b::setApp("B")
+
+#If checkNoDesktop() && GetKeyState("RControl", "P") && GetKeyState("RShift", "P") && GetKeyState("LShift", "P")
 
 1::runPassLib()
 2::Return

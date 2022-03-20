@@ -12,7 +12,6 @@ iniMouseTyping:
     Global gfRContorl := False
     Global gfRShift := False
     Global gfSpace := False
-    Global gfRAlt := False
 
     Global gfShiftCS := False
     Global gfShiftSC := False
@@ -27,6 +26,41 @@ checkNoDesktop() {
     WinGetClass, vAhkClass, A
     IniRead, vResult, %vIni%, ahk_class, %vAhkClass%, OnDesktop
     Return vResult <> "OnDesktop"
+}
+
+setMousePosAWin(pSleep) {
+    Sleep, %pSleep%
+    WinGetPos, vWX, vWY, vWW, vWH, A
+    vMX := vWX + (vWW / 2)
+    vMY := vWY + (vWH / 2)
+    MouseMove, %vMX%, %vMY%
+    Send, {LControl}
+}
+
+moveWinNextMonitor() {
+    WinGetPos, vWX, vWY, vWW, vWH, A
+    vWCX := vWX + (vWW / 2)
+    vWCY := vWY + (vWH / 2)
+    SysGet, MonCount, MonitorCount
+    Loop, %MonCount% {
+        SysGet, Mon, Monitor, %A_Index%
+        ; Check Log
+        ;Msgbox Left--%MonLeft%, Right--%MonRight%, Bottom--%MonBottom%, Top--%MonTop%, X%vWX% Y%vWY%
+        If ( (MonLeft <= vWCX) & (MonRight >= vWCX) & (MonBottom >= vWCY) & (MonTop <= vWCY) ) {
+            vRWX := vWX - MonLeft
+            vRWY := vWY - MonTop
+            If (A_Index <> MonCount) {
+                vNextMonNum := A_Index + 1
+            } Else {
+                vNextMonNum := 1
+            }
+            SysGet, Mon, Monitor, %vNextMonNum%
+            vTWX := MonLeft + vRWX
+            vTWY := MonTop + vRWY
+            WinMove, A, , %vTWX%, %vTWY%
+            Break
+        }
+    }
 }
 
 ;*****************************************************************************************************************************************
@@ -85,28 +119,8 @@ checkNoDesktop() {
             gfLButton := True
             KeyWait, LButton, T%LONG_PRESS_DELAY%
             If (!ErrorLevel) & (A_PriorHotKey = "LButton") {
-                MouseGetPos, vMX, vMY
-                SysGet, MonCount, MonitorCount
-                Loop, %MonCount% {
-                    SysGet, Mon, Monitor, %A_Index%
-                    If ( (MonLeft < vMX) & (MonRight > vMX) & (MonBottom > vMY) & (MonTop < vMY) ) {
-                        ; Check Log
-                        ;Msgbox Left--%MonLeft%, Right--%MonRight%, Bottom--%MonBottom%, Top--%MonTop%, X%vMX% Y%vMY%
-                        ;Msgbox %A_Index%, %MonCount%
-                        vRMX := vMX - MonLeft
-                        vRMY := vMY - MonTop
-                        If (A_Index <> MonCount) {
-                            vNextMonNum := A_Index + 1
-                        } Else {
-                            vNextMonNum := 1
-                        }
-                        SysGet, Mon, Monitor, %vNextMonNum%
-                        vTMX := MonLeft + vRMX
-                        vTMY := MonTop + vRMY
-                        MouseMove, %vTMX%, %vTMY%
-                        Break
-                    }
-                }
+                moveWinNextMonitor()
+                setMousePosAWin(0)
             } Else {
                 KeyWait LButton
             }
@@ -175,25 +189,6 @@ checkNoDesktop() {
         c::2
         v::3
         b::Return
-
-    #If gfRAlt
-
-        q::Home
-        w::Up
-        e::End
-        r::Return
-        t::Return
-        a::Left
-        s::Down
-        d::Right
-        f::Return
-        g::Return
-        z::PgUp
-        x::Return
-        c::PgDn
-        v::Return
-        b::Return
-    
 ;---
 ; Shift Button
 
@@ -207,6 +202,7 @@ checkNoDesktop() {
             If (gfShiftCS) {
                 gfShiftCS := False
                 Send, {LAlt Up}
+                setMousePosAWin(70)
             } Else If (GetKeyState("LWin")) {
                 Send, {LWin Up}
             } Else {
@@ -231,10 +227,6 @@ checkNoDesktop() {
     #If gfSpace
 
         *Space Up::gfSpace := False
-    
-    #If gfRAlt
-
-        *RAlt Up::gfRAlt := False
 
     #If !checkNoDesktop()
 
@@ -290,15 +282,5 @@ checkNoDesktop() {
             KeyWait, Space, T%LONG_PRESS_DELAY%
             If (!ErrorLevel) & (A_PriorKey="Space") {
                 Send, {Blind}{Space}
-            }
-        Return
-
-    #If !checkNoDesktop() && !gfRAlt
-
-        *RAlt::
-            gfRAlt := True
-            KeyWait, RAlt, T%LONG_PRESS_DELAY%
-            If (!ErrorLevel) & (A_PriorKey="RAlt") {
-                Send, {Blind}{Backspace}
             }
         Return
