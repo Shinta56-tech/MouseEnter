@@ -171,6 +171,8 @@ moveWinNextMonitor() {
         c::Return
         v::PgDn
         b::Return
+        
+        Space::vk1D
 
     #If gfSpace
 
